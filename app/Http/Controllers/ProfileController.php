@@ -56,16 +56,22 @@ class ProfileController extends Controller
         $user->position = $request->position;
 
         if ($request->hasFile('picture')) {
-            if ($user->picture != 'profile.jpg') {
-                File::delete('assets/images/users/' . $user->picture);
+            // Delete old picture if not default
+            if ($user->picture && $user->picture !== 'default-profile.jpg') {
+                $oldPath = public_path('storage/avatars/' . $user->picture);
+                if (File::exists($oldPath)) {
+                    File::delete($oldPath);
+                }
             }
-            $filename = time() . '.' . $request->picture->extension();
-            $request->picture->move(public_path('assets/images/users'), $filename);
-            $user->picture = $filename;
+
+            // Store new picture in avatars directory
+            $fileName = time() . '_' . $request->username . '.' . $request->picture->extension();
+            $request->picture->storeAs('public/avatars', $fileName);
+            $user->picture = $fileName;
         }
 
         $user->save();
 
-        return redirect()->route('profile.show')->with('success', 'Profil berhasil diperbarui');
+        return redirect()->route('profile.show')->with('status', 'Profile updated successfully!');
     }
 }

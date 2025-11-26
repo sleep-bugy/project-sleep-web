@@ -9,9 +9,9 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex flex-col md:flex-row items-center">
             <div class="md:w-1/3 mb-8 md:mb-0 flex justify-center">
-                <img src="{{ isset($deviceModel->image_url) ? $deviceModel->image_url : 'https://placehold.co/300x300/0a192f/64ffda?text='.urlencode($deviceModel->name ?? 'Device') }}"
+                <img src="{{ $deviceModel->image_url ?: 'https://placehold.co/300x300/0a192f/64ffda?text=' . urlencode(strlen($deviceModel->name ?? 'Device') > 15 ? substr($deviceModel->name ?? 'Device', 0, 15) . '...' : ($deviceModel->name ?? 'Device')) }}"
                      alt="{{ $deviceModel->name ?? 'Device' }}"
-                     class="rounded-xl shadow-lg w-full max-w-xs">
+                     class="rounded-xl shadow-lg w-full max-w-xs object-cover h-64">
             </div>
             <div class="md:w-2/3 md:pl-12 text-center md:text-left">
                 <h1 class="text-4xl md:text-5xl font-bold text-white mb-4">{{ $deviceModel->name ?? 'Device Name' }}</h1>

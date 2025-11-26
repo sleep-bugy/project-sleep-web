@@ -13,10 +13,7 @@
 
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-    
-    <!-- Framer Motion CDN for animations -->
-    <script src="https://unpkg.com/framer-motion@10.16.4/dist/framer-motion.js"></script>
-    
+
     <style>
         :root {
             /* Dark theme colors */
