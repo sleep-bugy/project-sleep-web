@@ -24,5 +24,7 @@ class AppServiceProvider extends ServiceProvider
         Blade::directive('indo_currency', function ($expression) {
             return "Rp. <?php echo number_format($expression,0,',','.'); ?>";
         });
+
+        // Global helper to get flag emoji from country code (defined only once globally)
     }
 }

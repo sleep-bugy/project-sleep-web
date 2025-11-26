@@ -1,59 +1,39 @@
 <?php
 
-use App\Http\Controllers\AbsenceController;
-use App\Http\Controllers\CartController;
-use App\Http\Controllers\CategoryController;
-use App\Http\Controllers\CustomerController;
-use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\ItemController;
-use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\SupplierController;
-use App\Http\Controllers\TransactionController;
-use App\Http\Controllers\PaymentMethodController;
-use App\Http\Controllers\ReportController;
-use App\Http\Controllers\UserController;
-use App\Http\Middleware\IsSupervisor;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\FeaturesController;
+use App\Http\Controllers\DownloadController;
+use App\Http\Controllers\DeviceController;
+use App\Http\Controllers\TeamController;
+use App\Http\Controllers\AboutController;
+use App\Http\Controllers\AdminController;
+use App\Http\Controllers\LanguageController;
 use Illuminate\Support\Facades\Route;
 
+// Public routes
+Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/home', [HomeController::class, 'index'])->name('home.index');
+Route::get('/features', [FeaturesController::class, 'index'])->name('features');
+Route::get('/download', [DownloadController::class, 'index'])->name('download');
+Route::get('/download/{device}', [DeviceController::class, 'show'])->name('device.show');
+Route::get('/team', [TeamController::class, 'index'])->name('team');
+Route::post('/team/apply', [TeamController::class, 'apply'])->name('team.apply');
+Route::get('/about', [AboutController::class, 'index'])->name('about');
+
+// Language switch route
+Route::get('/language/{lang}', [LanguageController::class, 'switchLanguage'])->name('language.switch');
+
+// Auth routes
+require __DIR__ . '/auth.php';
+
+// Admin routes (requires authentication)
 Route::middleware('auth')->group(function () {
-    Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
-
-    Route::group(['prefix' => 'inventory'], function () {
-        Route::resource('category', CategoryController::class)->except('show');
-        Route::resource('supplier', SupplierController::class);
-        Route::resource('item', ItemController::class);
-    });
-
-    Route::resource('user', UserController::class)->except('show')->middleware(IsSupervisor::class);
-
-    Route::resource('customer', CustomerController::class);
-    Route::prefix('report')->group(function () {
-        Route::get('/transaction/filter', [ReportController::class, 'filter'])->name('report.transaction.filter');
-        Route::resource('transaction', ReportController::class)->names('report.transaction')->only('index', 'show');
-    });
-    Route::resource('absence', AbsenceController::class)->except('show');
-    Route::resource('payment-method', PaymentMethodController::class)->except('show');
-
-    Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
-    Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
-
-    Route::prefix('transaction')->group(function () {
-        Route::get('/get-invoice', [TransactionController::class, 'get_invoice'])->name('transaction.get_invoice');
-        Route::get('/get-items', [TransactionController::class, 'get_items'])->name('transaction.get_items');
-        Route::post('/save', [TransactionController::class, 'save_transaction'])->name('transaction.save');
-    });
-    Route::resource('transaction', TransactionController::class)->except('create', 'edit', 'update');
-
-    Route::prefix('cart')->group(function () {
-        Route::get('/', [CartController::class, 'index'])->name('cart.index');
-        Route::post('/', [CartController::class, 'store'])->name('cart.store');
-        Route::delete('/clear', [CartController::class, 'clear'])->name('cart.clear');
-        Route::get('/count-stock/{item}', [CartController::class, 'count_stock']);
-        Route::delete('/{cart}', [CartController::class, 'destroy']);
-        Route::get('/{item:code}', [ItemController::class, 'show']);
-        Route::put('/{cart}', [CartController::class, 'update']);
+    Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');  // Main admin dashboard
+    Route::prefix('admin')->group(function () {
+        Route::get('/devices', [AdminController::class, 'devices'])->name('admin.devices');
+        Route::get('/roms', [AdminController::class, 'roms'])->name('admin.roms');
+        Route::get('/content', [AdminController::class, 'content'])->name('admin.content');
+        Route::get('/applications', [AdminController::class, 'applications'])->name('admin.applications');
+        Route::get('/languages', [AdminController::class, 'languages'])->name('admin.languages');
     });
 });
-
-require __DIR__ . '/auth.php';

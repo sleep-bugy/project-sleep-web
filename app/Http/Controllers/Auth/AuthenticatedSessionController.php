@@ -36,7 +36,7 @@ class AuthenticatedSessionController extends Controller
             'login_at' => date('H:i'),
         ]);
 
-        return redirect()->intended(route('dashboard', absolute: false));
+        return redirect()->intended(route('admin.dashboard', absolute: false));
     }
 
     /**
